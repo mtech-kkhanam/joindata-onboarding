@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JoinData Onboarding</title>
+    
+        <!-- Load JoinData's required script -->
+        <script src="https://acc.join-data-global.net/onboarding/assets/scripts/mjd.js"></script>
+    </head>
+<body>
+
+    <h2>JoinData Onboarding Client</h2>
+    <button onclick="initializeJoinData()">Start Onboarding</button>
+
+    <script>
+        // Configuration settings for JoinData
+        var config = {
+            participationId: '222a77cf-ae2a-4105-816b-1968e088c73e', // Replace with actual participation ID
+            desktop: true,
+            clientId: '4074238839',  // Replace with actual client ID
+            flow: 'implicit'
+        };
+
+        function handleError(error) {
+            // For example purposes we just throw the error.
+            // We could introduce some logging here and show
+            // an appropriate message to the user.
+            throw error;
+        }
+
+        function afterInit(app) {
+            // First we check whether we are logged in
+            if (app.isLoggedIn) {
+            // Here we can retrieve the login token using app.token, if we need it.
+            // If we only want to use the login token and do not want the onboarding component,
+            // we can access app.token here and omit the rest of the example code in this body.
+            // Add a handler to the app to receive response
+            // about the result of the onboarding process.
+            app.onReceiveResponse(handleOnboardingResponse);
+            // We can now create the onboarding component.
+            var iframe = app.createOnboardingComponent();
+            // Set our own custom properties.
+            iframe.id = 'onboarding';
+            iframe.style.width = '375px';
+            iframe.style.height = '812px';
+            // Append it anywhere to our website.
+            // For example purposes, we add it to the body.
+            document.body.appendChild(iframe);
+            }
+            else {
+            // We are not logged in, so we should initiate the login flow.
+            // This call could, for example, also be wrapped inside a button press.
+            app.login();
+            }
+        }
+        function handleOnboardingResponse(response) {
+            // This function will recieve
+            // communication from the onboarding app.
+            if (response.granted) {
+            // The participation has been granted by the user
+            // and now we are ready to retrieve the accepted mandates.
+            alert('granted: ' + response.message);
+            }
+            else if (response.refused) {
+            // The participation has been refused by the user.
+            alert('refused: ' + response.message);
+            }
+            else {
+            // An unprocessable response has been received.
+            alert('unknown: ' + response.message);
+            }       
+        }
+
+        function initializeJoinData() {
+            MyJoinData.App.initialize(config, afterInit, handleError)
+        }
+    </script>
+
+</body>
+</html>
